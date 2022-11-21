@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gmiller.chachat.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +32,13 @@ class MainActivity : AppCompatActivity() {
         val database = Firebase.database("https://mychat-2618d-default-rtdb.asia-southeast1.firebasedatabase.app")
         val myRef = database.getReference("message")
         binding.bSend.setOnClickListener{
+            val view: View? = this.currentFocus
+            if (view != null) {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+            }
+
+            binding.rcView.smoothScrollToPosition(binding.rcView.getAdapter()?.itemCount!!.toInt() - 1)
             myRef.child(myRef.push().key ?: "pusto")
                 .setValue(User(auth.currentUser?.displayName, binding.edMessage.text.toString()))
             binding.edMessage.setText("")
